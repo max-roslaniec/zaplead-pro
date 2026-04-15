@@ -177,10 +177,11 @@ export const Uploader: React.FC<UploaderProps> = ({ onDataLoaded }) => {
 
             <textarea
               className="form-control"
-              placeholder="Exemplo:&#10;Nome,Telefone&#10;João Silva,51999990001&#10;Maria Luz,51999990002"
+              placeholder={"Exemplo:\nNome,Telefone\nJoão Silva,51999990001\nMaria Luz,51999990002"}
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               rows={8}
+              style={{ resize: 'none' }}
             />
             <button className="btn btn-primary" onClick={processText} disabled={!rawText.trim()}>
               <FileText size={18} /> Processar Lista
