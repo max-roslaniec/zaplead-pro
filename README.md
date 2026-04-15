@@ -16,13 +16,13 @@ Gerador de Campanhas do WhatsApp desenvolvido com **React.js** + **Vite** e escr
 ## 🚀 Como rodar localmente
 
 ```bash
-# Navegue até a pasta do projeto
+# Com npm
 npm install
-# ou use o bun!
-bun install
-
-# Inicie o servidor
 npm run dev
+
+# Com bun (mais rápido!)
+bun install
+bun run dev
 ```
 
 Acesse a porta retornada no terminal (geralmente [http://localhost:5173](http://localhost:5173))
