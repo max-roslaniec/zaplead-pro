@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZapLead Pro – Documentação Técnica</title>
+  <meta name="description" content="Documentação oficial do ZapLead Pro, o gerador open-source de campanhas de WhatsApp para corretores e vendedores, criado por Max Roslaniec." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:        #25D366;
+      --green-dark:   #1EB852;
+      --green-glow:   rgba(37, 211, 102, 0.18);
+      --bg:           #0d0f12;
+      --bg-card:      #13161b;
+      --bg-card2:     #1a1e26;
+      --border:       rgba(255,255,255,0.07);
+      --border-green: rgba(37, 211, 102, 0.3);
+      --text:         #e8eaf0;
+      --text-muted:   #7a8095;
+      --text-dim:     #4e5568;
+      --radius:       16px;
+      --radius-sm:    8px;
+      --transition:   0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --font:         'Inter', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+      --shadow-card:  0 4px 32px rgba(0,0,0,0.4);
+      --shadow-glow:  0 0 40px rgba(37, 211, 102, 0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green-dark); border-radius: 4px; }
+
+    /* ===== NOISE OVERLAY ===== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== LAYOUT ===== */
+    .page-wrapper { position: relative; z-index: 1; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ===== NAVIGATION ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,15,18,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 1rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .nav-brand .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 16px rgba(37,211,102,0.3);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-cta {
+      background: var(--green);
+      color: #000 !important;
+      border-radius: var(--radius-sm);
+      font-weight: 600 !important;
+      padding: 0.5rem 1.1rem !important;
+      transition: background var(--transition), transform var(--transition) !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--green-dark) !important;
+      transform: translateY(-1px);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse at center top, rgba(37,211,102,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--green-glow);
+      border: 1px solid var(--border-green);
+      color: var(--green);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.6s ease both;
+    }
+
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.6s ease 0.1s both;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--green), #7dffb3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 2.5rem;
+      animation: fadeInDown 0.6s ease 0.2s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInDown 0.6s ease 0.3s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(37,211,102,0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    /* ===== META STATS ===== */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 4rem auto;
+      max-width: 900px;
+      animation: fadeInUp 0.6s ease 0.4s both;
+    }
+
+    .stat-item {
+      background: var(--bg-card);
+      padding: 1.75rem 2rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--green);
+      display: block;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 0.3rem;
+      display: block;
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 5rem 0;
+    }
+
+    .section-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .section-lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin-bottom: 3rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+
+    .card:hover {
+      border-color: var(--border-green);
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-3px);
+    }
+
+    .icon-box {
+      width: 48px; height: 48px;
+      background: var(--green-glow);
+      border: 1px solid var(--border-green);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ===== STORY SECTION ===== */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .story-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    .story-text h2 { margin-bottom: 1.25rem; }
+
+    .story-text p {
+      color: var(--text-muted);
+      margin-bottom: 1.1rem;
+      font-size: 0.97rem;
+    }
+
+    .story-text p strong { color: var(--text); }
+
+    .quote-card {
+      background: linear-gradient(135deg, rgba(37,211,102,0.08), rgba(37,211,102,0.03));
+      border: 1px solid var(--border-green);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    .quote-card::before {
+      content: '"';
+      position: absolute;
+      top: -0.5rem; left: 1.5rem;
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+      opacity: 0.4;
+    }
+
+    .quote-card blockquote {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.7;
+      padding-top: 1.5rem;
+    }
+
+    .quote-card cite {
+      display: block;
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--green);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ===== FEATURES GRID ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--green), transparent);
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      animation: fadeInLeft 0.5s ease both;
+    }
+
+    .step-num {
+      width: 48px; height: 48px;
+      background: var(--bg-card2);
+      border: 2px solid var(--border-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--green);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      padding-top: 0.6rem;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== TECH SECTION ===== */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .tech-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .tech-card:hover {
+      border-color: var(--border-green);
+      transform: translateY(-3px);
+    }
+
+    .tech-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .tech-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .tech-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ===== CODE BLOCK ===== */
+    .code-block {
+      background: #0a0c10;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .code-dots span {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .code-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .code-body {
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .code-body pre {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: #e8eaf0;
+    }
+
+    .c-green  { color: #25D366; }
+    .c-blue   { color: #79b8ff; }
+    .c-purple { color: #b392f0; }
+    .c-orange { color: #ffab70; }
+    .c-muted  { color: var(--text-dim); }
+    .c-string { color: #f1fa8c; }
+
+    /* ===== OPEN SOURCE ===== */
+    .oss-banner {
+      background: linear-gradient(135deg, rgba(37,211,102,0.1), rgba(37,211,102,0.04));
+      border: 1px solid var(--border-green);
+      border-radius: var(--radius);
+      padding: 3.5rem;
+      text-align: center;
+    }
+
+    .oss-banner h2 {
+      font-size: clamp(1.7rem, 4vw, 2.3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .oss-banner p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-size: 0.97rem;
+    }
+
+    .oss-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .license-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 1.5rem;
+    }
+
+    /* ===== ADVANTAGES ===== */
+    .adv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .adv-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .hero { padding: 4rem 1.5rem 2.5rem; }
+    }
+
+    .adv-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .adv-item:hover {
+      border-color: var(--border-green);
+      transform: translateY(-2px);
+    }
+
+    .adv-emoji {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .adv-item h4 {
+      font-size: 0.97rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .adv-item p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .footer-brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-brand span { color: var(--green); }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* observe animation on scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== WARNING HIGHLIGHT ===== */
+    .info-box {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .info-box.warning {
+      background: rgba(255, 193, 7, 0.08);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      color: #ffd54f;
+    }
+
+    .info-box.success {
+      background: var(--green-glow);
+      border: 1px solid var(--border-green);
+      color: var(--green);
+    }
+
+    .info-box .icon { font-size: 1.35rem; flex-shrink: 0; }
+
+    .info-box p { color: inherit; }
+    .info-box p strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ===== NAV ===== -->
+  <nav aria-label="Navegação principal">
+    <div class="nav-inner">
+      <a href="#inicio" class="nav-brand">
+        <div class="logo-mark" aria-hidden="true">💬</div>
+        ZapLead <strong style="color: var(--green)">Pro</strong>
+      </a>
+      <ul class="nav-links" role="list">
+        <li><a href="#historia">História</a></li>
+        <li><a href="#funcionalidades">Funcionalidades</a></li>
+        <li><a href="#tecnologias">Tecnologias</a></li>
+        <li><a href="#vantagens">Vantagens</a></li>
+        <li><a href="#open-source">Open Source</a></li>
+        <li><a href="https://github.com/max-roslaniec/zaplead-pro" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section id="inicio" class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="badge" role="status" aria-label="Versão estável">
+      <span class="badge-dot" aria-hidden="true"></span>
+      Open Source · v1.0.0 · Estável
+    </div>
+
+    <h1 class="hero-title">
+      Seus leads. Sua mensagem.<br>
+      <span class="highlight">Do jeito certo.</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      O ZapLead Pro é um gerador de campanhas de WhatsApp feito por e para corretores de imóveis —
+      rápido, seguro, 100% local e em conformidade total com a LGPD.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#funcionalidades" class="btn btn-primary">
+        📖 Ver documentação
+      </a>
+      <a href="https://github.com/max-roslaniec/zaplead-pro" target="_blank" rel="noopener" class="btn btn-outline">
+        ⭐ Estrelar no GitHub
+      </a>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="stats-strip" role="list" aria-label="Destaques do projeto">
+      <div class="stat-item" role="listitem">
+        <span class="stat-value">100%</span>
+        <span class="stat-label">Local — sem servidor</span>
+      </div>
+      <div class="stat-item" role="listitem">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Dados enviados para a nuvem</span>
+      </div>
+      <div class="stat-item" role="listitem">
+        <span class="stat-value">5</span>
+        <span class="stat-label">IAs integradas para extração</span>
+      </div>
+      <div class="stat-item" role="listitem">
+        <span class="stat-value">MIT</span>
+        <span class="stat-label">Licença aberta e livre</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== HISTÓRIA ===== -->
+  <section id="historia">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-text reveal">
+          <span class="section-eyebrow">História & motivação</span>
+          <h2 class="section-title">Como tudo começou</h2>
+
+          <p>
+            Sou <strong>Max Roslaniec</strong>, corretor de imóveis em atividade e estudante de
+            programação. No meu dia a dia, precisava entrar em contato com dezenas de leads toda
+            semana. O processo era sempre o mesmo: copiar o número, abrir o WhatsApp, digitar
+            a mensagem — e repetir isso para cada contato da lista.
+          </p>
+          <p>
+            Sem nenhuma ferramenta que atendesse exatamente o que eu precisava (gratuita,
+            simples, segura e sem risco de ban), decidi construir a minha própria.
+          </p>
+          <p>
+            O <strong>ZapLead Pro</strong> nasceu como projeto pessoal, mas logo virou também
+            o meu primeiro projeto público no GitHub. Queria desde o início que qualquer
+            corretor, vendedor ou profissional de captação pudesse usá-lo sem complicação —
+            e que qualquer desenvolvedor pudesse estudar, adaptar e contribuir com o código.
+          </p>
+        </div>
+
+        <div class="quote-card reveal">
+          <blockquote>
+            Eu queria uma ferramenta que respeitasse as regras do WhatsApp, mas que ainda
+            tornasse o meu fluxo de trabalho dez vezes mais rápido. Quando percebi que isso
+            não existia, simplesmente construí.
+          </blockquote>
+          <cite>— Max Roslaniec, criador do ZapLead Pro</cite>
+        </div>
+      </div>
+
+      <!-- WhatsApp policy note -->
+      <div class="info-box warning reveal" style="margin-top: 3rem;" role="note" aria-label="Nota sobre políticas do WhatsApp">
+        <span class="icon" aria-hidden="true">⚠️</span>
+        <p>
+          <strong>Por que não é um bot?</strong> O ZapLead Pro é deliberadamente projetado
+          para <em>assistir</em> os envios, não automatizá-los totalmente. O WhatsApp (Meta) proíbe
+          automações que disparam mensagens sem interação humana, e as contas que transgridem
+          essa regra são banidas. Cada mensagem aqui é aberta manualmente — você clica,
+          você envia. A ferramenta só elimina o trabalho braçal de preparação.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== COMO FUNCIONA ===== -->
+  <section id="como-funciona">
+    <div class="container">
+      <span class="section-eyebrow reveal">Passo a passo</span>
+      <h2 class="section-title reveal">Como o programa funciona</h2>
+      <p class="section-lead reveal">
+        Um fluxo de trabalho completo, do contato bruto à mensagem no WhatsApp, em menos de
+        dois minutos.
+      </p>
+
+      <div class="steps" role="list" aria-label="Passos do fluxo de trabalho">
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 1">1</div>
+          <div class="step-content">
+            <h3>Configure sua campanha</h3>
+            <p>
+              No painel de <em>Configurações da Campanha</em>, você insere seu nome de corretor
+              e personaliza o modelo de mensagem. Use <code>{Nome}</code> para inserir
+              automaticamente o primeiro nome de cada lead e <code>{Corretor}</code> para o seu.
+              As configurações são salvas automaticamente no <code>localStorage</code> —
+              você não perde nada ao recarregar a página.
+            </p>
+          </div>
+        </div>
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 2">2</div>
+          <div class="step-content">
+            <h3>Importe seus contatos</h3>
+            <p>
+              Escolha entre dois métodos: <strong>colar texto</strong> (formato CSV direto na
+              caixa de texto) ou <strong>subir um arquivo .CSV</strong> via drag-and-drop ou
+              clique. O parser inteligente baseado em <em>Papa Parse</em> detecta automaticamente
+              as colunas de Nome e Telefone, independentemente da ordem.
+            </p>
+          </div>
+        </div>
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 3">3</div>
+          <div class="step-content">
+            <h3>Use IA para extrair contatos de fotos</h3>
+            <p>
+              Tem uma lista impressa ou anotada à mão? O Uploader inclui um prompt inteligente
+              pré-pronto. Copie-o com um clique, abra uma das cinco IAs integradas (Gemini,
+              ChatGPT, DeepSeek, Copilot ou Grok), envie a foto da lista e cole a resposta CSV
+              já estruturada diretamente no painel.
+            </p>
+          </div>
+        </div>
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 4">4</div>
+          <div class="step-content">
+            <h3>Visualize sua lista na tabela</h3>
+            <p>
+              Após o processamento, todos os contatos aparecem em uma tabela paginada (10 por
+              página). Cada linha mostra o nome, um botão de ação e um checkbox de controle.
+            </p>
+          </div>
+        </div>
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 5">5</div>
+          <div class="step-content">
+            <h3>Envie a mensagem manualmente</h3>
+            <p>
+              Clique em <strong>"Chamar no Zap"</strong>. O link <code>wa.me/</code> é montado
+              dinamicamente com o número formatado e a mensagem já personalizada. O WhatsApp
+              (Desktop ou Web) abre com tudo pronto — você apenas pressiona Enviar.
+              O contato é automaticamente marcado como "Já Contatado" na tabela.
+            </p>
+          </div>
+        </div>
+
+        <div class="step reveal" role="listitem">
+          <div class="step-num" aria-label="Passo 6">6</div>
+          <div class="step-content">
+            <h3>Acompanhe o progresso</h3>
+            <p>
+              Contatos já contatados ficam marcados, riscados e desativados visualmente,
+              dando clareza total sobre quem ainda precisa ser contactado durante a rodada.
+              Quando terminar, limpe a lista com um botão e comece uma nova campanha.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tip box -->
+      <div class="info-box success reveal" style="margin-top: 3rem;" role="note" aria-label="Dica de uso">
+        <span class="icon" aria-hidden="true">💡</span>
+        <p>
+          <strong>Dica de ouro:</strong> instale o <strong>WhatsApp Desktop</strong> nativo
+          da Microsoft Store (ou Mac App Store). Assim, cada link abre imediatamente na mesma
+          janela do app — sem o navegador criar dezenas de novas abas para cada lead!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== FUNCIONALIDADES ===== -->
+  <section id="funcionalidades">
+    <div class="container">
+      <span class="section-eyebrow reveal">O que está incluído</span>
+      <h2 class="section-title reveal">Funcionalidades em detalhe</h2>
+      <p class="section-lead reveal">
+        Cada recurso foi pensado para eliminar fricção no fluxo de trabalho real de um corretor,
+        sem abrir mão de segurança ou simplicidade.
+      </p>
+
+      <div class="features-grid">
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">📋</div>
+          <h3>Importação dupla (texto + CSV)</h3>
+          <p>
+            Aceita contatos colados diretamente como texto simples no formato CSV
+            ou importados via arquivo <code>.csv</code>. O sistema detecta automaticamente
+            cabeçalhos como "Nome", "Telefone", "Celular" e "Numero" sem configuração manual.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">🤖</div>
+          <h3>Integração com 5 IAs</h3>
+          <p>
+            Um prompt cuidadosamente calibrado transforma qualquer foto de lista impressa em
+            CSV estruturado via Gemini, ChatGPT, DeepSeek, Copilot ou Grok — com atalhos
+            de acesso rápido diretamente no painel.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">✏️</div>
+          <h3>Mensagem personalizável com variáveis</h3>
+          <p>
+            O template de mensagem suporta <code>{Nome}</code> (primeiro nome do lead) e
+            <code>{Corretor}</code> (seu nome) como variáveis dinâmicas, substituídas em
+            tempo real na construção de cada link <code>wa.me/</code>.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">📊</div>
+          <h3>Tabela paginada com controle</h3>
+          <p>
+            Lista até 10 contatos por página com navegação fluida. Cada contato tem um
+            checkbox de progresso — ao marcar, a linha é riscada e o botão de envio
+            desativado, impedindo contatos duplicados.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">💾</div>
+          <h3>Persistência via LocalStorage</h3>
+          <p>
+            Nome do corretor e modelo de mensagem são salvos automaticamente no
+            <code>localStorage</code> do navegador. Nenhum dado é enviado a servidores externos —
+            tudo persiste localmente, com total privacidade da sua lista de clientes.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">🌙</div>
+          <h3>Tema claro e escuro</h3>
+          <p>
+            Alterne entre modo claro e escuro com um clique. A preferência é salva no
+            <code>localStorage</code> e aplicada via atributo <code>data-theme</code> no
+            elemento raiz, respeitando sua escolha entre sessões.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">🇧🇷</div>
+          <h3>Formatação de telefone automática</h3>
+          <p>
+            Números com até 11 dígitos recebem automaticamente o prefixo <code>+55</code>
+            (Brasil) na construção da URL. A sanitização remove traços, parênteses e espaços,
+            garantindo que links <code>wa.me/</code> sempre funcionem.
+          </p>
+        </div>
+
+        <div class="card reveal">
+          <div class="icon-box" aria-hidden="true">🔒</div>
+          <h3>Envio manual controlado</h3>
+          <p>
+            Cada mensagem é aberta manualmente pelo usuário — uma decisão arquitetural
+            deliberada para ficar dentro das políticas de uso do WhatsApp e evitar banimentos
+            de conta por comportamento de bot ou spam automatizado.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== TECNOLOGIAS ===== -->
+  <section id="tecnologias">
+    <div class="container">
+      <span class="section-eyebrow reveal">Stack técnico</span>
+      <h2 class="section-title reveal">Tecnologias utilizadas</h2>
+      <p class="section-lead reveal">
+        O projeto foi construído sobre tecnologias modernas, amplamente adotadas e com
+        excelente ecossistema de suporte — escolhas conscientes para garantir
+        performance, manutenibilidade e facilidade de contribuição.
+      </p>
+
+      <div class="tech-grid">
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">⚛️</div>
+          <div class="tech-info">
+            <h4>React 19</h4>
+            <p>UI reativa com Hooks — useState, useEffect, useCallback</p>
+          </div>
+        </div>
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">🔷</div>
+          <div class="tech-info">
+            <h4>TypeScript</h4>
+            <p>Tipagem estática completa — interfaces, generics, type narrowing</p>
+          </div>
+        </div>
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">⚡</div>
+          <div class="tech-info">
+            <h4>Vite</h4>
+            <p>Build ultrarrápido via ESModules — HMR em tempo real</p>
+          </div>
+        </div>
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">📄</div>
+          <div class="tech-info">
+            <h4>Papa Parse</h4>
+            <p>Parser CSV robusto com detecção automática de cabeçalho</p>
+          </div>
+        </div>
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">✨</div>
+          <div class="tech-info">
+            <h4>Lucide React</h4>
+            <p>Ícones SVG pixel-perfect, acessíveis e leves</p>
+          </div>
+        </div>
+
+        <div class="tech-card reveal">
+          <div class="tech-icon" aria-hidden="true">🎨</div>
+          <div class="tech-info">
+            <h4>CSS Puro</h4>
+            <p>Design system com variáveis CSS — sem frameworks desnecessários</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Code excerpt -->
+      <div class="code-block reveal" style="margin-top: 3rem;" role="region" aria-label="Exemplo de código: construção de link WhatsApp">
+        <div class="code-header">
+          <div class="code-dots" aria-hidden="true">
+            <span class="dot-red"></span>
+            <span class="dot-yellow"></span>
+            <span class="dot-green"></span>
+          </div>
+          <span class="code-label">ContactsTable.tsx — getUrl()</span>
+          <span></span>
+        </div>
+        <div class="code-body">
+          <pre><code><span class="c-muted">// Monta o link wa.me/ personalizado para cada contato</span>
+<span class="c-purple">const</span> <span class="c-blue">getUrl</span> = (<span class="c-orange">contact</span>: <span class="c-green">ContactRecord</span>) =&gt; {
+  <span class="c-purple">const</span> firstName = contact.name.<span class="c-blue">split</span>(<span class="c-string">' '</span>)[<span class="c-orange">0</span>] || contact.name;
+
+  <span class="c-purple">const</span> msg = settings.messageTemplate
+    .<span class="c-blue">replace</span>(<span class="c-string">/{Nome}/gi</span>, firstName)
+    .<span class="c-blue">replace</span>(<span class="c-string">/{Corretor}/gi</span>, settings.brokerName)
+    .<span class="c-blue">replace</span>(<span class="c-string">/\\n/g</span>, <span class="c-string">'\n'</span>);
+
+  <span class="c-muted">// Adiciona DDI +55 se o número for nacional (≤ 11 dígitos)</span>
+  <span class="c-purple">let</span> finalPhone = contact.phone;
+  <span class="c-purple">if</span> (finalPhone.length &lt;= <span class="c-orange">11</span>) {
+    finalPhone = <span class="c-string">'55'</span> + finalPhone;
+  }
+
+  <span class="c-purple">const</span> encoded = <span class="c-blue">encodeURIComponent</span>(msg);
+  <span class="c-purple">return</span> <span class="c-string">`https://wa.me/<span class="c-orange">${finalPhone}</span>?text=<span class="c-orange">${encoded}</span>`</span>;
+};</code></pre>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== VANTAGENS ===== -->
+  <section id="vantagens">
+    <div class="container">
+      <span class="section-eyebrow reveal">Por que usar</span>
+      <h2 class="section-title reveal">As vantagens do ZapLead Pro</h2>
+      <p class="section-lead reveal">
+        Comparado a soluções pagas, automações arriscadas ou fluxos manuais, o ZapLead Pro
+        oferece o melhor dos três mundos.
+      </p>
+
+      <div class="adv-grid">
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">🛡️</div>
+          <div>
+            <h4>Segurança da conta garantida</h4>
+            <p>
+              Por não usar nenhuma automação de envio real, seu número de WhatsApp nunca
+              está em risco de ban. Você age como um humano — porque você é um.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">🔐</div>
+          <div>
+            <h4>Privacidade total dos dados</h4>
+            <p>
+              Nenhum contato, nome ou telefone é enviado para servidores externos.
+              Tudo processa no seu navegador — sem banco de dados, sem nuvem, sem riscos
+              com a LGPD.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">⚡</div>
+          <div>
+            <h4>10x mais rápido que o fluxo manual</h4>
+            <p>
+              Em vez de copiar número, abrir WhatsApp, digitar mensagem e personalizar
+              para cada lead, você clica uma vez. A mensagem já está pronta e personalizada.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">💸</div>
+          <div>
+            <h4>Completamente gratuito</h4>
+            <p>
+              Sem planos, sem assinaturas, sem freemium. É open-source com licença MIT —
+              você pode usar, modificar e distribuir sem pagar nada, para sempre.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">📷</div>
+          <div>
+            <h4>Extração de listas via foto + IA</h4>
+            <p>
+              Tem uma lista impressa? Tire uma foto, mande para uma IA com o prompt
+              incluído no app e receba um CSV estruturado em segundos. Digitalização zero-esforço.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">🧩</div>
+          <div>
+            <h4>Fácil de rodar e personalizar</h4>
+            <p>
+              Dois comandos no terminal (<code>npm install</code> + <code>npm run dev</code>)
+              e está rodando. O código é limpo, tipado e bem organizado para quem quiser adaptar.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">🌙</div>
+          <div>
+            <h4>Interface premium e acessível</h4>
+            <p>
+              Modo escuro, tipografia cuidadosa, design system com variáveis CSS e elementos
+              semânticos acessíveis. Uma ferramenta que dá prazer de usar.
+            </p>
+          </div>
+        </div>
+
+        <div class="adv-item reveal">
+          <div class="adv-emoji" aria-hidden="true">📱</div>
+          <div>
+            <h4>Compatível com WhatsApp Desktop</h4>
+            <p>
+              Funcionando com o app nativo, cada link abre na mesma janela — sem abrir
+              centenas de abas no navegador durante uma rodada de envios em massa.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ===== OPEN SOURCE ===== -->
+  <section id="open-source">
+    <div class="container">
+
+      <div class="oss-banner reveal">
+        <span class="section-eyebrow" style="color: var(--green)">Código aberto</span>
+        <h2>O ZapLead Pro é Open Source. <br>Para sempre.</h2>
+        <p>
+          O código completo está disponível publicamente no GitHub. Você pode estudar como foi
+          construído, criar a sua própria versão, adaptar para outros segmentos, contribuir com
+          melhorias ou simplesmente usá-lo. Não há restrições — apenas compartilhe com a
+          mesma licença.
+        </p>
+
+        <div class="oss-actions">
+          <a href="https://github.com/max-roslaniec/zaplead-pro" target="_blank" rel="noopener" class="btn btn-primary">
+            ⭐ Ver no GitHub
+          </a>
+          <a href="https://github.com/max-roslaniec/zaplead-pro/fork" target="_blank" rel="noopener" class="btn btn-outline">
+            🍴 Fazer um Fork
+          </a>
+          <a href="https://github.com/max-roslaniec/zaplead-pro/archive/refs/heads/main.zip" class="btn btn-outline">
+            ⬇️ Baixar ZIP
+          </a>
+        </div>
+
+        <div class="license-badge" aria-label="Licença MIT">
+          📄 Licença MIT — use, modifique e distribua livremente.
+        </div>
+      </div>
+
+      <!-- Quick start -->
+      <div style="margin-top: 3.5rem;">
+        <h3 class="reveal" style="font-size: 1.3rem; font-weight: 700; margin-bottom: 1.25rem;">
+          Rodando em 60 segundos
+        </h3>
+
+        <div class="code-block reveal" role="region" aria-label="Comandos para instalação e execução">
+          <div class="code-header">
+            <div class="code-dots" aria-hidden="true">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+            <span class="code-label">terminal — bash / powershell</span>
+            <span></span>
+          </div>
+          <div class="code-body">
+            <pre><code><span class="c-muted"># 1. Clone o repositório</span>
+<span class="c-green">git</span> clone https://github.com/max-roslaniec/zaplead-pro.git
+<span class="c-green">cd</span> zaplead-pro
+
+<span class="c-muted"># 2a. Com npm (padrão)</span>
+<span class="c-green">npm</span> install
+<span class="c-green">npm</span> run dev
+
+<span class="c-muted"># 2b. Com bun (mais rápido!)</span>
+<span class="c-green">bun</span> install
+<span class="c-green">bun</span> run dev
+
+<span class="c-muted"># 3. Abra no navegador</span>
+<span class="c-muted">#    http://localhost:5173</span></code></pre>
+          </div>
+        </div>
+
+        <div class="code-block reveal" role="region" aria-label="Estrutura de arquivos do projeto" style="margin-top: 1.25rem;">
+          <div class="code-header">
+            <div class="code-dots" aria-hidden="true">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+            <span class="code-label">estrutura do projeto</span>
+            <span></span>
+          </div>
+          <div class="code-body">
+            <pre><code>zaplead-pro/
+├── <span class="c-blue">src/</span>
+│   ├── <span class="c-green">App.tsx</span>              <span class="c-muted"># Raiz da aplicação — estado global, layout</span>
+│   ├── <span class="c-green">index.css</span>            <span class="c-muted"># Design system — variáveis, componentes</span>
+│   ├── <span class="c-green">main.tsx</span>             <span class="c-muted"># Entry point React</span>
+│   └── <span class="c-blue">components/</span>
+│       ├── <span class="c-green">SettingsPanel.tsx</span>   <span class="c-muted"># Nome do corretor + template de mensagem</span>
+│       ├── <span class="c-green">Uploader.tsx</span>        <span class="c-muted"># Upload CSV, texto e integração com IAs</span>
+│       └── <span class="c-green">ContactsTable.tsx</span>   <span class="c-muted"># Tabela paginada + geração de links wa.me</span>
+├── <span class="c-orange">exemplo_contatos.csv</span>     <span class="c-muted"># Arquivo de exemplo para testes</span>
+├── <span class="c-orange">docs.html</span>               <span class="c-muted"># Esta documentação</span>
+└── <span class="c-orange">package.json</span>            <span class="c-muted"># Dependências: React, Papa Parse, Lucide</span></code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        Zap<span>Lead</span> Pro
+      </div>
+      <p>
+        Criado com 💚 por <a href="https://github.com/max-roslaniec" target="_blank" rel="noopener">Max Roslaniec</a> · Licença MIT
+      </p>
+      <nav class="footer-links" aria-label="Links do rodapé">
+        <a href="#inicio">Início</a>
+        <a href="#historia">História</a>
+        <a href="#funcionalidades">Funcionalidades</a>
+        <a href="#tecnologias">Tecnologias</a>
+        <a href="#vantagens">Vantagens</a>
+        <a href="#open-source">Open Source</a>
+        <a href="https://github.com/max-roslaniec/zaplead-pro" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </footer>
+
+</div><!-- /page-wrapper -->
+
+<script>
+  // Scroll-reveal animation using IntersectionObserver
+  (function () {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  })();
+
+  // Smooth active nav link highlight on scroll
+  (function () {
+    const sections = document.querySelectorAll('section[id]');
+    const links    = document.querySelectorAll('.nav-links a');
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            links.forEach((a) => {
+              a.style.color = '';
+              if (a.getAttribute('href') === '#' + e.target.id) {
+                a.style.color = 'var(--green)';
+              }
+            });
+          }
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+
+    sections.forEach((s) => io.observe(s));
+  })();
+</script>
+</body>
+</html>

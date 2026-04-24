@@ -1,17 +1,26 @@
 # 💬 ZapLead Pro
 
-Gerador de Campanhas do WhatsApp desenvolvido com **React.js** + **Vite** e escrito em **TypeScript**. Este projeto automatiza e facilita o envio de mensagens padronizadas no WhatsApp para uma lista de leads ou contatos, sejam eles inseridos via arquivo ou transcritos de fotos via IA.
+[![Demo ao vivo](https://img.shields.io/badge/Demo-Acessar%20App-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://zaplead-pro.vercel.app)
+[![Documentação](https://img.shields.io/badge/Docs-Ver%20Documentação-0d0f12?style=for-the-badge&logo=gitbook&logoColor=white)](https://zaplead-pro.vercel.app/docs.html)
+[![Licença MIT](https://img.shields.io/badge/Licença-MIT-green?style=for-the-badge)](LICENSE)
+[![Feito com React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 
-> **💡 Dica de Ouro (Workflow Rápido):** Para um uso massivo de envios, instale o aplicativo **WhatsApp Desktop** nativo da sua loja de aplicativos (Microsoft Store ou Mac App Store). Utilizar o aplicativo via Desktop fará com que as conversas abram imediatamente na mesma janela, evitando que o navegador abra centenas de novas guias no WhatsApp Web para cada lead!
+Gerador de campanhas do WhatsApp desenvolvido com **React 19** + **Vite** e escrito em **TypeScript**. Facilita o envio de mensagens personalizadas para uma lista de leads — sem automação total, sem risco de ban, em conformidade com a LGPD.
+
+> **💡 Dica de Ouro:** Instale o **WhatsApp Desktop** nativo (Microsoft Store ou Mac App Store). As conversas abrirão na mesma janela, sem o navegador criar centenas de abas por campanha.
+
+---
 
 ## ✅ Funcionalidades
 
-- **Importação Dinâmica:** Aceita inserção direta em modo texto ou uploads de arquivos `.CSV`.
-- **Mão na roda com IAs:** Inclui instruções e atalhos embutidos, permitindo que você envie a foto de um papel com contatos para uma IA (DeepSeek, ChatGPT, Gemini, Copilot, Grok) e ela mesmo estruture a lista que o painel irá receber.
-- **Tabela Progressiva:** Lista os leads organizadamente em tabela e permite que você cruze ("check") quais clientes já entrou em contato durante a rodada.
-- **Variáveis Padronizadas:** Configure a mensagem de campanha trocando `{Nome}` dinamicamente pelo primeiro nome registrado na tabela na hora do envio.
-- **Totalmente Local & Seguro:** O projeto armazena e processa todos os estados e a base em lote através do `LocalStorage`. Sem back-ends ou banco de dados na nuvem que comprometam o sigilo da lista de contatos corporativos.
-- **Interface Premium e Moderna:** Sistema com tema claro/escuro e grid interativa CSS.
+- **Importação dupla:** texto colado ou arquivo `.CSV` com drag-and-drop
+- **IA integrada:** prompt pré-pronto para extrair contatos de fotos via Gemini, ChatGPT, DeepSeek, Copilot ou Grok
+- **Tabela progressiva:** lista paginada com checkbox de progresso por lead
+- **Variáveis dinâmicas:** `{Nome}` e `{Corretor}` substituídos automaticamente em cada mensagem
+- **100% local:** tudo processado no navegador via `localStorage` — nenhum dado sai do seu computador
+- **Tema claro/escuro:** preferência salva entre sessões
+
+---
 
 ## 🚀 Como rodar localmente
 
@@ -25,12 +34,45 @@ bun install
 bun run dev
 ```
 
-Acesse a porta retornada no terminal (geralmente [http://localhost:5173](http://localhost:5173))
+Acesse [http://localhost:5173](http://localhost:5173)
+
+---
 
 ## 🛠 Tecnologias
 
-- [React.js](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vitejs.dev/)
-- [Papa Parse](https://www.papaparse.com/)
-- [Lucide Icons](https://lucide.dev/)
+| Tecnologia | Uso |
+|---|---|
+| [React 19](https://react.dev/) | Interface reativa com Hooks |
+| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática completa |
+| [Vite](https://vitejs.dev/) | Build e dev server ultrarrápido |
+| [Papa Parse](https://www.papaparse.com/) | Parser de arquivos CSV |
+| [Lucide React](https://lucide.dev/) | Ícones SVG acessíveis |
+
+---
+
+## 📁 Estrutura do projeto
+
+```
+zaplead-pro/
+├── src/
+│   ├── App.tsx               # Raiz da aplicação — estado global, layout
+│   ├── index.css             # Design system — variáveis, componentes
+│   ├── main.tsx              # Entry point React
+│   └── components/
+│       ├── SettingsPanel.tsx  # Nome do corretor + template de mensagem
+│       ├── Uploader.tsx       # Upload CSV, texto e integração com IAs
+│       └── ContactsTable.tsx  # Tabela paginada + geração de links wa.me
+├── public/
+│   └── docs.html             # Documentação técnica (SPA)
+└── exemplo_contatos.csv      # Arquivo de exemplo para testes
+```
+
+---
+
+## 📄 Licença
+
+Distribuído sob a licença **MIT**. Use, modifique e distribua livremente — veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+---
+
+Criado por [Max Roslaniec](https://github.com/max-roslaniec) · Projeto open-source para estudo e uso profissional.
